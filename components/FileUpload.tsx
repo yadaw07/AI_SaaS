@@ -88,8 +88,8 @@ const FileUpload = () => {
           </div>
         </div>
       ) : (
-        <div className='flex items-center gap-3 p-4 bg-gradient-to-r from-rose-50 to-teal-50 rounded-lg border border-rose-100'>
-          <FileText className='h-5 w-5 text-rose-600 flex-shrink-0' />
+        <div className='flex items-center gap-3 p-4 bg-linear-to-r from-rose-50 to-teal-50 rounded-lg border border-rose-100'>
+          <FileText className='h-5 w-5 text-rose-600 shrink-0' />
           <div className='flex-1 min-w-0'>
             <p className='text-sm font-medium text-slate-900 truncate'>
               {file.name}
@@ -114,7 +114,7 @@ const FileUpload = () => {
         <Button
           onClick={handleUpload}
           disabled={isUploading}
-          className='w-full bg-gradient-to-r from-rose-500 to-teal-500 hover:from-rose-600 hover:to-teal-600 text-white'
+          className='w-full bg-linear-to-r from-rose-500 to-teal-500 hover:from-rose-600 hover:to-teal-600 text-white'
         >
           {isUploading ? 'Uploading...' : 'Upload PDF'}
         </Button>
