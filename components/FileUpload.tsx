@@ -8,10 +8,13 @@ import { useDropzone } from 'react-dropzone';
 import { useUser } from '@clerk/nextjs';
 
 import { Button } from './ui/button';
+
 import { supabase } from '@/lib/supabase_bucket';
+import { useUploadFile } from '@/lib/react-queries';
 
 const FileUpload = () => {
   const { user } = useUser();
+  const { mutate, isPending: isSaving } = useUploadFile();
 
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,17 +36,16 @@ const FileUpload = () => {
   const handleUpload = async () => {
     if (!file || !user) return;
 
+    if (file.size > 10 * 1024 * 1024) {
+      return setError('File too large');
+    }
+
     setIsUploading(true);
     setError(null);
 
     try {
       // Upload to Supabase Storage
-      const filePath =
-        user.id +
-        '/' +
-        Date.now().toString() +
-        '-' +
-        file.name.replace(' ', '-');
+      const filePath = `${user.id}/${Date.now().toString()}-${file.name.replace(' ', '-')}`;
       const { data, error: uploadError } = await supabase.storage
         .from('chat_pdf')
         .upload(filePath, file);
@@ -54,11 +56,11 @@ const FileUpload = () => {
       const {
         data: { publicUrl },
       } = supabase.storage.from('chat_pdf').getPublicUrl(filePath);
-      console.log('Public URL:', publicUrl);
+
+      // Save to DB
+      mutate({ file_key: data.path, file_name: file.name });
 
       setFile(null);
-
-      // TODO: Upload to backend
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
@@ -116,7 +118,7 @@ const FileUpload = () => {
           disabled={isUploading}
           className='w-full bg-linear-to-r from-rose-500 to-teal-500 hover:from-rose-600 hover:to-teal-600 text-white'
         >
-          {isUploading ? 'Uploading...' : 'Upload PDF'}
+          {isUploading ? 'Uploading...' : isSaving ? 'Saving...' : 'Upload PDF'}
         </Button>
       )}
     </div>
