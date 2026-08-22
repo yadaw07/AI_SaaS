@@ -4,6 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 
 import db from '@/lib/db';
 import { chats } from '@/lib/db/schema';
+import { loadPdfToPinecone } from '@/lib/pinecone';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,18 +15,21 @@ export async function POST(req: NextRequest) {
 
     const { file_key, file_name, file_url } = await req.json();
 
-    // Save to DB
-    const newChat = await db
-      .insert(chats)
-      .values({
-        pdfName: file_name,
-        pdfUrl: file_url,
-        fileKey: file_key,
-        userId,
-      })
-      .returning();
+    await loadPdfToPinecone(file_key);
 
-    return NextResponse.json(newChat[0]);
+    // Save to DB
+    // const newChat = await db
+    //   .insert(chats)
+    //   .values({
+    //     pdfName: file_name,
+    //     pdfUrl: file_url,
+    //     fileKey: file_key,
+    //     userId,
+    //   })
+    //   .returning();
+
+    // return NextResponse.json(newChat[0]);
+    return NextResponse.json({ message: 'working fine' }, { status: 200 });
   } catch (e) {
     console.error(e);
     return NextResponse.json(
