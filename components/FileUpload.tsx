@@ -14,7 +14,7 @@ import { useUploadFile } from '@/lib/react-queries';
 
 const FileUpload = () => {
   const { user } = useUser();
-  const { mutate, isPending: isSaving } = useUploadFile();
+  const { mutateAsync, isPending: isSaving } = useUploadFile();
 
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +58,13 @@ const FileUpload = () => {
       } = supabase.storage.from('chat_pdf').getPublicUrl(filePath);
 
       // Save to DB
-      mutate({ file_key: data.path, file_name: file.name });
+      const result = await mutateAsync({
+        file_key: data.path,
+        file_name: file.name,
+        file_url: publicUrl,
+      });
+
+      console.log('RESPONSE::', result);
 
       setFile(null);
     } catch (err) {

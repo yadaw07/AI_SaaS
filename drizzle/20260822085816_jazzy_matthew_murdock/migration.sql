@@ -1,0 +1,1 @@
+ALTER TABLE "chats" DROP CONSTRAINT "chats_user_id_key";

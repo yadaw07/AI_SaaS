@@ -12,15 +12,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { pdfName, pdfUrl, fileKey } = await req.json();
+    const { file_key, file_name, file_url } = await req.json();
 
     // Save to DB
     const newChat = await db
       .insert(chats)
       .values({
-        pdfName,
-        pdfUrl,
-        fileKey,
+        pdfName: file_name,
+        pdfUrl: file_url,
+        fileKey: file_key,
         userId,
       })
       .returning();

@@ -5,14 +5,16 @@ import axios from 'axios';
 type Props = {
   file_key: string;
   file_name: string;
+  file_url: string;
 };
 
 export const useUploadFile = () => {
-  const { mutate, isPending } = useMutation({
-    mutationFn: async ({ file_key, file_name }: Props) => {
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: async ({ file_key, file_name, file_url }: Props) => {
       const response = await axios.post('/api/create-chat', {
         file_key,
         file_name,
+        file_url,
       });
 
       return response.data;
@@ -22,5 +24,5 @@ export const useUploadFile = () => {
     },
   });
 
-  return { mutate, isPending };
+  return { mutateAsync, isPending };
 };
